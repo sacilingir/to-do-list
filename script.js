@@ -7,7 +7,8 @@ let gorevListesi = [
   { id: 4, gorevAdi: "Görev 4" },
 ];
 
-let taskInput = document.querySelector("#txtTaskName");
+const taskInput = document.querySelector("#txtTaskName");
+const btnClear = document.querySelector("#btnClear");
 
 let editId;
 let isEditTask = false;
@@ -17,27 +18,30 @@ displayTasks();
 function displayTasks() {
   let ul = document.getElementById("task-list");
   ul.innerHTML = "";
+  if (gorevListesi.length == 0) {
+    ul.innerHTML = "<p class='p-3 m-0'>Görev listeniz boş</p>";
+  } else {
+    for (let gorev of gorevListesi) {
+      let li = `
+                        <li class="task list-group-item">
+                            <div class="form-check">
+                                <input type="checkbox" id="${gorev.id}" class="form-check-input">
+                                <label for="${gorev.id}" class="form-check-label">${gorev.gorevAdi}</label>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a onclick="deleteTask(${gorev.id})" class="dropdown-item" href="#"><i class="fa-solid fa-trash-can"></i> Sil</a></li>
+                                    <li><a onclick='editTask(${gorev.id}, "${gorev.gorevAdi}")' class="dropdown-item" href="#"><i class="fa-solid fa-pen"></i> Düzenle</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    `;
 
-  for (let gorev of gorevListesi) {
-    let li = `
-                    <li class="task list-group-item">
-                        <div class="form-check">
-                            <input type="checkbox" id="${gorev.id}" class="form-check-input">
-                            <label for="${gorev.id}" class="form-check-label">${gorev.gorevAdi}</label>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-ellipsis"></i>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a onclick="deleteTask(${gorev.id})" class="dropdown-item" href="#"><i class="fa-solid fa-trash-can"></i> Sil</a></li>
-                                <li><a onclick='editTask(${gorev.id}, "${gorev.gorevAdi}")' class="dropdown-item" href="#"><i class="fa-solid fa-pen"></i> Düzenle</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                `;
-
-    ul.insertAdjacentHTML("beforeend", li);
+      ul.insertAdjacentHTML("beforeend", li);
+    }
   }
 }
 
@@ -62,11 +66,11 @@ function newTask(event) {
       });
     } else {
       //güncelleme
-      for(let gorev of gorevListesi){
-        if(gorev.id==editId){
-            gorev.gorevAdi=taskInput.value;
+      for (let gorev of gorevListesi) {
+        if (gorev.id == editId) {
+          gorev.gorevAdi = taskInput.value;
         }
-        isEditTask=false;
+        isEditTask = false;
       }
     }
 
@@ -92,5 +96,10 @@ function editTask(taskId, taskName) {
   isEditTask = true;
   taskInput.value = taskName;
   taskInput.focus();
-  taskInput.classList.add("active")
+  taskInput.classList.add("active");
 }
+
+btnClear.addEventListener("click", function () {
+  gorevListesi.splice(0, gorevListesi.length);
+  displayTasks();
+});
