@@ -1,10 +1,10 @@
 "use strict";
 
 let gorevListesi = [
-  { id: 1, gorevAdi: "Görev 1" },
-  { id: 2, gorevAdi: "Görev 2" },
-  { id: 7, gorevAdi: "Görev 3" },
-  { id: 4, gorevAdi: "Görev 4" },
+  { id: 1, gorevAdi: "Görev 1", durum: "completed" },
+  { id: 2, gorevAdi: "Görev 2", durum: "pending" },
+  { id: 7, gorevAdi: "Görev 3", durum: "completed" },
+  { id: 4, gorevAdi: "Görev 4", durum: "pending" },
 ];
 
 const taskInput = document.querySelector("#txtTaskName");
@@ -22,11 +22,18 @@ function displayTasks() {
     ul.innerHTML = "<p class='p-3 m-0'>Görev listeniz boş</p>";
   } else {
     for (let gorev of gorevListesi) {
+      let completed;
+      if (gorev.durum == "completed") {
+        completed = "checked";
+      } else {
+        completed = "";
+      }
+
       let li = `
                         <li class="task list-group-item">
                             <div class="form-check">
-                                <input type="checkbox" id="${gorev.id}" class="form-check-input">
-                                <label for="${gorev.id}" class="form-check-label">${gorev.gorevAdi}</label>
+                                <input type="checkbox" onclick="updateStatus(this)" id="${gorev.id}" class="form-check-input" ${completed}>
+                                <label for="${gorev.id}" class="form-check-label ${completed}">${gorev.gorevAdi}</label>
                             </div>
                             <div class="dropdown">
                                 <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -103,3 +110,21 @@ btnClear.addEventListener("click", function () {
   gorevListesi.splice(0, gorevListesi.length);
   displayTasks();
 });
+
+function updateStatus(selectedTask){
+    let label=selectedTask.parentElement.lastElementChild;
+    let durum;
+    if(selectedTask.checked){
+        label.classList.add("checked")
+        durum="completed"
+    }else{
+        label.classList.remove("checked")
+        durum="pending"
+    }
+    for(let gorev of gorevListesi){
+        if(gorev.id==selectedTask.id){
+            gorev.durum=durum;
+        }
+    }
+   
+}
