@@ -9,13 +9,14 @@ let gorevListesi = [
 
 const taskInput = document.querySelector("#txtTaskName");
 const btnClear = document.querySelector("#btnClear");
+const filters = document.querySelectorAll(".filters span");
 
 let editId;
 let isEditTask = false;
 
 displayTasks();
 
-function displayTasks() {
+function displayTasks(filter) {
   let ul = document.getElementById("task-list");
   ul.innerHTML = "";
   if (gorevListesi.length == 0) {
@@ -29,7 +30,8 @@ function displayTasks() {
         completed = "";
       }
 
-      let li = `
+      if (filter == gorev.durum || filter == "all") {
+        let li = `
                         <li class="task list-group-item">
                             <div class="form-check">
                                 <input type="checkbox" onclick="updateStatus(this)" id="${gorev.id}" class="form-check-input" ${completed}>
@@ -46,8 +48,8 @@ function displayTasks() {
                             </div>
                         </li>
                     `;
-
-      ul.insertAdjacentHTML("beforeend", li);
+        ul.insertAdjacentHTML("beforeend", li);
+      }
     }
   }
 }
@@ -60,6 +62,14 @@ document
       document.getElementById("btnAddNewTask").click();
     }
   });
+
+for (let span of filters) {
+  span.addEventListener("click", function () {
+    document.querySelector("span.active").classList.remove("active");
+    span.classList.add("active");
+    displayTasks(span.id);
+  });
+}
 
 function newTask(event) {
   if (taskInput.value == "") {
@@ -82,7 +92,7 @@ function newTask(event) {
     }
 
     taskInput.value = "";
-    displayTasks();
+    displayTasks(document.querySelector("span.active").id);
   }
 
   event.preventDefault();
@@ -96,7 +106,7 @@ function deleteTask(id) {
     }
   }
   gorevListesi.splice(deletedId, 1);
-  displayTasks();
+  displayTasks(document.querySelector("span.active").id);
 }
 function editTask(taskId, taskName) {
   editId = taskId;
@@ -108,23 +118,22 @@ function editTask(taskId, taskName) {
 
 btnClear.addEventListener("click", function () {
   gorevListesi.splice(0, gorevListesi.length);
-  displayTasks();
+  displayTasks("all");
 });
 
-function updateStatus(selectedTask){
-    let label=selectedTask.parentElement.lastElementChild;
-    let durum;
-    if(selectedTask.checked){
-        label.classList.add("checked")
-        durum="completed"
-    }else{
-        label.classList.remove("checked")
-        durum="pending"
+function updateStatus(selectedTask) {
+  let label = selectedTask.parentElement.lastElementChild;
+  let durum;
+  if (selectedTask.checked) {
+    label.classList.add("checked");
+    durum = "completed";
+  } else {
+    label.classList.remove("checked");
+    durum = "pending";
+  }
+  for (let gorev of gorevListesi) {
+    if (gorev.id == selectedTask.id) {
+      gorev.durum = durum;
     }
-    for(let gorev of gorevListesi){
-        if(gorev.id==selectedTask.id){
-            gorev.durum=durum;
-        }
-    }
-   
+  }
 }
