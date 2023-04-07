@@ -1,11 +1,10 @@
 "use strict";
 
-let gorevListesi = [
-  { id: 1, gorevAdi: "Görev 1", durum: "completed" },
-  { id: 2, gorevAdi: "Görev 2", durum: "pending" },
-  { id: 7, gorevAdi: "Görev 3", durum: "completed" },
-  { id: 4, gorevAdi: "Görev 4", durum: "pending" },
-];
+let gorevListesi = [];
+
+if(localStorage.getItem("gorevListesi") !==null){
+  gorevListesi=JSON.parse(localStorage.getItem("gorevListesi"));
+}
 
 const taskInput = document.querySelector("#txtTaskName");
 const btnClear = document.querySelector("#btnClear");
@@ -79,7 +78,7 @@ function newTask(event) {
       //ekleme
       gorevListesi.push({
         id: gorevListesi.length + 1,
-        gorevAdi: taskInput.value,
+        gorevAdi: taskInput.value,"durum":"pending"
       });
     } else {
       //güncelleme
@@ -93,6 +92,7 @@ function newTask(event) {
 
     taskInput.value = "";
     displayTasks(document.querySelector("span.active").id);
+    localStorage.setItem("gorevListesi",JSON.stringify(gorevListesi));
   }
 
   event.preventDefault();
@@ -136,4 +136,6 @@ function updateStatus(selectedTask) {
       gorev.durum = durum;
     }
   }
+  displayTasks(document.querySelector("span.active").id);
+
 }
